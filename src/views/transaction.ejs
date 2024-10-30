@@ -1,0 +1,20 @@
+<!-- src/views/transaction.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Details</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1>Transaction Details</h1>
+  <p><strong>Transaction Hash:</strong> <%= transaction.hash %></p>
+  <p><strong>From:</strong> <%= transaction.from %></p>
+  <p><strong>To:</strong> <%= transaction.to %></p>
+  <p><strong>Value:</strong> <%= transaction.value / 1e18 %> ETH</p>
+  <p><strong>Block Number:</strong> <%= transaction.blockNumber %></p>
+  
+  <a href="/">Back to Transactions</a>
+</body>
+</html>

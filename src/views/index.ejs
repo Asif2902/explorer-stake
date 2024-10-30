@@ -1,0 +1,42 @@
+<!-- src/views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contract Transactions Explorer</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1>Contract Transactions Explorer</h1>
+  
+  <form method="get" action="/">
+    <label for="wallet">Search by Wallet Address:</label>
+    <input type="text" name="wallet" id="wallet" placeholder="Enter wallet address" value="<%= wallet %>">
+    <button type="submit">Search</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Transaction Hash</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Value (ETH)</th>
+        <th>Block Number</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% transactions.forEach(transaction => { %>
+        <tr>
+          <td><a href="<%= NETWORK_EXPLORER_URL + transaction.hash %>" target="_blank"><%= transaction.hash %></a></td>
+          <td><%= transaction.from %></td>
+          <td><%= transaction.to %></td>
+          <td><%= transaction.value / 1e18 %> ETH</td>
+          <td><%= transaction.blockNumber %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>

@@ -1,7 +1,17 @@
 {
+  "name": "my-blockchain-explorer",
+  "version": "1.0.0",
+  "description": "A simple blockchain explorer for specific contract transactions",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "dependencies": {
     "axios": "^1.7.7",
     "ejs": "^3.1.10",
     "express": "^4.21.1"
+  },
+  "engines": {
+    "node": ">=14.x"
   }
 }

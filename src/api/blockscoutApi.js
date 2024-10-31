@@ -13,4 +13,15 @@ async function fetchContractTransactions() {
   }
 }
 
-module.exports = { fetchContractTransactions };
+async function fetchWalletBalance(walletAddress) {
+  const url = `${BLOCKSCOUT_API_URL}?module=account&action=balance&address=${walletAddress}`;
+  try {
+    const response = await axios.get(url);
+    return response.data.result;
+  } catch (error) {
+    console.error('Error fetching wallet balance:', error);
+    return 0;
+  }
+}
+
+module.exports = { fetchContractTransactions, fetchWalletBalance };

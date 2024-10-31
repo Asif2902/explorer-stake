@@ -10,21 +10,33 @@ async function getTransactions(req, res) {
   let walletDetails = null;
   if (wallet) {
     const walletTransactions = transactions.filter(
-      tx => (tx.from.toLowerCase() === wallet.toLowerCase() || tx.to.toLowerCase() === wallet.toLowerCase()) &&
-            tx.to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()
+      tx => tx.from.toLowerCase() === wallet.toLowerCase() || tx.to.toLowerCase() === wallet.to.toLowerCase()
     );
 
     const totalValue = walletTransactions.reduce((acc, tx) => acc + parseFloat(tx.value), 0);
-    const firstTransaction = walletTransactions[walletTransactions.length - 1]; // earliest transaction
+    const firstTransaction = walletTransactions[walletTransactions.length - 1];
     const balance = await fetchWalletBalance(wallet);
 
     walletDetails = {
       balance: formatValue(balance),
       totalTransactions: walletTransactions.length,
       totalValue: formatValue(totalValue),
-      firstTransactionDate: new Date(firstTransaction.timeStamp * 1000).toLocaleDateString(), // Convert timestamp to date
+      firstTransaction,
     };
   }
 
   res.render('index', { transactions, wallet, walletDetails, NETWORK_EXPLORER_URL });
 }
+
+async function getTransactionDetails(req, res) {
+  const transactions = await fetchContractTransactions();
+  const transaction = transactions.find(tx => tx.hash === req.params.hash);
+
+  if (!transaction) {
+    return res.status(404).send('Transaction not found');
+  }
+
+  res.render('transaction', { transaction });
+}
+
+module.exports = { getTransactions, getTransactionDetails };

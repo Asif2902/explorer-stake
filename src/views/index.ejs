@@ -4,36 +4,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staking Transactions Explorer</title>
+  <title>Contract Transactions Explorer</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1> Staking Transactions Explorer</h1>
-  
+  <h1>Contract Transactions Explorer</h1>
+
   <form method="get" action="/">
     <label for="wallet">Search by Wallet Address:</label>
     <input type="text" name="wallet" id="wallet" placeholder="Enter wallet address" value="<%= wallet %>">
     <button type="submit">Search</button>
   </form>
 
+  <% if (walletDetails) { %>
+    <div class="wallet-details">
+      <p><strong>Wallet Balance:</strong> <%= walletDetails.balance %> ETH</p>
+      <p><strong>Total Transactions with Contract:</strong> <%= walletDetails.totalTransactions %></p>
+      <p><strong>Total Transaction Value with Contract:</strong> <%= walletDetails.totalValue %> ETH</p>
+      <p><strong>First Transaction Date with Contract:</strong> <%= walletDetails.firstTransactionDate %></p>
+    </div>
+  <% } %>
+
   <table>
     <thead>
       <tr>
         <th>Transaction Hash</th>
-        <th>From</th>
-        <th>To</th>
+        <th>Function</th>
         <th>Value (ETH)</th>
         <th>Block Number</th>
+        <th>Age</th>
       </tr>
     </thead>
     <tbody>
       <% transactions.forEach(transaction => { %>
         <tr>
           <td><a href="<%= NETWORK_EXPLORER_URL + transaction.hash %>" target="_blank"><%= transaction.hash %></a></td>
-          <td><%= transaction.from %></td>
-          <td><%= transaction.to %></td>
+          <td><%= getFunctionName(transaction.input) %></td>
           <td><%= transaction.value / 1e18 %> ETH</td>
           <td><%= transaction.blockNumber %></td>
+          <td><%= calculateAge(transaction.timeStamp) %></td>
         </tr>
       <% }) %>
     </tbody>

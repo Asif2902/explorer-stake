@@ -1,27 +1,30 @@
 // src/controllers/transactionController.js
-const { fetchContractTransactions } = require('../api/blockscoutApi');
+const { fetchContractTransactions, fetchWalletBalance } = require('../api/blockscoutApi');
 const { NETWORK_EXPLORER_URL } = require('../config/config');
+const { formatValue, getFunctionName, calculateAge } = require('../utils/helpers');
 
 async function getTransactions(req, res) {
-  const transactions = await fetchContractTransactions();
   const { wallet } = req.query;
-
-  const filteredTransactions = wallet
-    ? transactions.filter(tx => tx.from.toLowerCase() === wallet.toLowerCase() || tx.to.toLowerCase() === wallet.toLowerCase())
-    : transactions;
-
-  res.render('index', { transactions: filteredTransactions, wallet, NETWORK_EXPLORER_URL });
-}
-
-async function getTransactionDetails(req, res) {
   const transactions = await fetchContractTransactions();
-  const transaction = transactions.find(tx => tx.hash === req.params.hash);
+  
+  let walletDetails = null;
+  if (wallet) {
+    const walletTransactions = transactions.filter(
+      tx => (tx.from.toLowerCase() === wallet.toLowerCase() || tx.to.toLowerCase() === wallet.toLowerCase()) &&
+            tx.to.toLowerCase() === CONTRACT_ADDRESS.toLowerCase()
+    );
 
-  if (!transaction) {
-    return res.status(404).send('Transaction not found');
+    const totalValue = walletTransactions.reduce((acc, tx) => acc + parseFloat(tx.value), 0);
+    const firstTransaction = walletTransactions[walletTransactions.length - 1]; // earliest transaction
+    const balance = await fetchWalletBalance(wallet);
+
+    walletDetails = {
+      balance: formatValue(balance),
+      totalTransactions: walletTransactions.length,
+      totalValue: formatValue(totalValue),
+      firstTransactionDate: new Date(firstTransaction.timeStamp * 1000).toLocaleDateString(), // Convert timestamp to date
+    };
   }
 
-  res.render('transaction', { transaction });
+  res.render('index', { transactions, wallet, walletDetails, NETWORK_EXPLORER_URL });
 }
-
-module.exports = { getTransactions, getTransactionDetails };
